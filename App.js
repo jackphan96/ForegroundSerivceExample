@@ -4,6 +4,8 @@ import {SafeAreaView, StyleSheet, Text, StatusBar, Button} from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {DeviceEventEmitter} from 'react-native';
 import ReactNativeForegroundService from '@supersami/rn-foreground-service';
+import Geolocation from '@react-native-community/geolocation'
+
 // importing Service to call
 
 const App = () => {
@@ -39,10 +41,16 @@ const App = () => {
     // Checking if the task i am going to create already exist and running, which means that the foreground is also running.
     if (ReactNativeForegroundService.is_task_running('taskid')) return;
     // Creating a task.
-    ReactNativeForegroundService.add_task(
-      () => console.log('I am Being Tested'),
+    ReactNativeForegroundService.add_task(() => {
+      console.log('I am Being Tested')
+      Geolocation.getCurrentPosition((info) => {
+        console.log("Component Geo info => " + info.coords.latitude + " " + info.coords.longitude);
+      },error => console.log('Error', JSON.stringify(error)),
+        {enableHighAccuracy: true, timeout: 60000, maximumAge: 1000},
+      )
+      },
       {
-        delay: 100,
+        delay: 1000,
         onLoop: true,
         taskId: 'taskid',
         onError: (e) => console.log(`Error logging:`, e),
